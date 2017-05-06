@@ -19,6 +19,9 @@ def close_connection(exception):
 @app.route('/index')
 def index():
     cur = get_db().cursor()
-    cur.execute("SELECT * FROM temphum ORDER BY timestamp DESC LIMIT 1")
-    row = cur.fetchone()
-    return render_template('index.html', temperature=row[1], humidity=row[2])
+    cur.execute("SELECT * FROM temphum ORDER BY timestamp DESC LIMIT 10")
+    rows = cur.fetchall()
+    temperatures = [x[1] for x in rows]
+    timestamps = [x[0] for x in rows]
+    legend = "Last 10 temperatures"
+    return render_template('index.html', labels=timestamps, values=temperatures, legend=legend)
