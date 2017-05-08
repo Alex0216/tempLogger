@@ -1,7 +1,8 @@
 from app import app
-from flask import render_template, g
+from flask import render_template, g, request
 import sqlite3
-
+from dateutil.parser  import parse
+from datetime import datetime, timedelta
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -17,11 +18,25 @@ def close_connection(exception):
 
 @app.route('/')
 @app.route('/index')
-def index():
+def index(): 
+    fromDateString = request.args.get('from','')
+    fromDate = datetime.now() - timedelta(days=1)
+    toDate = datetime.now()
+    if fromDateString:
+        fromDate = parse(fromDateString)
+        toDateString = request.args.get('to', '')
+        if toDateString:
+            toDate = parse(toDateString)    
+            if toDate == fromDate:
+                toDate += timedelta(days=1)
+            print toDate
+            print fromDate
+    
     cur = get_db().cursor()
-    cur.execute("SELECT * FROM temphum ORDER BY timestamp DESC LIMIT 10")
+    cur.execute("SELECT * FROM temphum WHERE timestamp BETWEEN date(?) AND date(?) ORDER BY timestamp", (fromDate, toDate))
     rows = cur.fetchall()
-    temperatures = [x[1] for x in rows]
-    timestamps = [x[0] for x in rows]
-    legend = "Last 10 temperatures"
-    return render_template('index.html', labels=timestamps, values=temperatures, legend=legend)
+    rows.reverse()
+    temperatures = [round(x[1],2) for x in rows]
+    humidity = [round(x[2],2) for x in rows]
+    timestamps = [x[0] for x in rows] #strftime("%Y-%b-%dT%H:%M")
+    return render_template('index.html',fromdate=fromDate, todate=toDate, labels=timestamps, temps=temperatures, hum=humidity)
