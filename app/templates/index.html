@@ -8,6 +8,8 @@
                 integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
                 crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+        <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
     </head>
     <body>
         <h1>Temperature</h1>
@@ -15,17 +17,15 @@
         {{fromdate}}
         {{todate}}
         </div>
-        <form>
-            From:
-            <input type="date" name="from">
-            To:
-            <input type="date" name="to">
-            <input type="submit">
-        </form>
+        <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+            <span></span> <b class="caret"></b>
+        </div>
         <div style="width:75%">
             <canvas id="tempChart" ></canvas>
         </div>
         <script>
+            $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
             Chart.defaults.global.responsive = true;
            
             var timeFormat = 'YYYY/MM/DD HH:mm';
@@ -108,6 +108,68 @@
                     }]
                 }
               }
+        });
+        
+        $(function() {
+            var start = moment().add(-29, 'days');
+            var end = moment();
+
+            function cb(start, end) {
+                $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+            }
+
+            $('#reportrange').daterangepicker({
+                startDate: start,
+                endDate: end,
+                ranges: {
+                   'Today': [moment(), moment()],
+                    'Yesterday': [moment().add(-1, 'days'), moment().add(-1, 'days')],
+                    'Last 7 Days': [moment().add(-6, 'days'), moment()],
+                    'Last 30 Days': [moment().add(-29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().add(-1, 'month').startOf('month'), moment().add(-1, 'month').endOf('month')]
+                }
+            }, cb);
+
+            cb(start, end);
+
+            $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
+                console.log(picker.startDate.format('YYYY-MM-DDTHH:mm'));
+                console.log(picker.endDate.format('YYYY-MM-DDTHH:mm'));
+                var start = picker.startDate.format('YYYY-MM-DDTHH:mm');
+                var end = picker.endDate.format('YYYY-MM-DDTHH:mm');
+                $.getJSON($SCRIPT_ROOT + '/_get_data', {
+                    startDate: start,
+                    endDate: end
+                }, function(data) {
+                    console.log(data.timestamps);
+                    chartData.labels = data.timestamps;
+                    chartData.datasets[0].data = data.temperatures;
+                    chartData.datasets[1].data = data.humidities;
+                    ctx = document.getElementById("tempChart").getContext("2d");
+                    if (typeof myChart != undefined)
+                        myChart.destroy();
+                    myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: chartData,
+                        options: {
+                            scales: {
+                                xAxes: [{
+                                    type: 'time',
+                                    time: {
+                                        format: timeFormat,
+                                        tooltipFormat: 'll HH:mm:ss'
+                                    },
+                                    scaleLabel: {
+                                        display: true,
+                                         labelString: 'Date'
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                });
+            });
         });
         </script>
 
