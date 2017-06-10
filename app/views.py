@@ -3,7 +3,6 @@ from flask import Flask, render_template, g, request, jsonify
 import sqlite3
 from dateutil.parser  import parse
 from datetime import datetime, timedelta
-import RPi.GPIO as GPIO
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -20,10 +19,6 @@ def close_connection(exception):
 @app.route('/')
 @app.route('/index')
 def index(): 
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
-    GPIO.setup(18, GPIO.OUT)
-    GPIO.output(18, GPIO.HIGH)
     fromDate = datetime.now() - timedelta(days=1)
     toDate = datetime.now()
     
@@ -34,16 +29,15 @@ def index():
     temperatures = [round(x[1],2) for x in rows]
     humidity = [round(x[2],2) for x in rows]
     timestamps = [x[0] for x in rows] #strftime("%Y-%b-%dT%H:%M")
-    GPIO.output(18, GPIO.LOW)
-    return render_template('index.html',fromdate=fromDate, todate=toDate, labels=timestamps, temps=temperatures, hum=humidity)
+    return render_template('index.html')
 
 @app.route('/_get_data')
 def get_data():
     if request.args.get('startDate') and request.args.get('endDate'):
         startDate = request.args["startDate"]
         endDate = request.args["endDate"]
-        print parse(startDate)
-        print parse(endDate)
+        print(parse(startDate))
+        print(parse(endDate))
         fromDate = parse(startDate)
         toDate = parse(endDate)
         cur = get_db().cursor()
@@ -53,6 +47,23 @@ def get_data():
         temperatures = [round(x[1],2) for x in rows]
         humidities = [round(x[2],2) for x in rows]
         timestamps = [x[0] for x in rows] #strftime("%Y-%b-%dT%H:%M")
-        print timestamps
-        GPIO.output(18, GPIO.LOW)
+        print(timestamps)
+    return jsonify(timestamps=timestamps, temperatures=temperatures, humidities=humidities)
+
+@app.route('/_get_dataMinMax')
+def get_dataMinMax():
+    if request.args.get('startDate') and request.args.get('endDate'):
+        startDate = request.args["startDate"]
+        endDate = request.args["endDate"]
+        fromDate = parse(startDate)
+        toDate = parse(endDate)
+        cur = get_db().cursor()
+        cur.execute("SELECT Date(timestamp) as Day , MAX(humidity) AS MaxHum, MIN(humidity) AS MinHum from temphum WHERE timestamp BETWEEN ? AND ? GROUP BY Day ORDER BY timestamp", (fromDate.isoformat(), toDate.isoformat()))
+        rows = cur.fetchall()
+        rows.reverse()
+        temperatures = [round(x[1],2) for x in rows]
+        humidities = [round(x[2],2) for x in rows]
+        timestamps = [x[0] for x in rows] #strftime("%Y-%b-%dT%H:%M")
+        print(timestamps)
+        #GPIO.output(18, GPIO.LOW)
     return jsonify(timestamps=timestamps, temperatures=temperatures, humidities=humidities)
