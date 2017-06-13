@@ -1,6 +1,7 @@
-<html>
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Apt PP148</title>
     <script src='static/moment.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js'></script>
@@ -18,28 +19,43 @@
     <script>
         $SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
     </script>
-    <h1>Temperature</h1>
-    <div>
-        {{fromdate}} {{todate}}
-    </div>
-    <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-        <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
-        <span></span> <b class="caret"></b>
-    </div>
-    <div style="width:75%">
-        <canvas id="tempChart"></canvas>
-    </div>
-    <div id="reportrangeMinMax" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-        <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
-        <span></span> <b class="caret"></b>
-    </div>
-    <div style="width:75%">
-        <canvas id="minMaxChart"></canvas>
+    <div class="container-fluid">
+        <div class="page-header">
+            <h1>Dashboard</h1>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <h2>Temperature & Humidity</h2>
+                <div id="reportrange" class="pull-left" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                    <span></span> <b class="caret"></b>
+                </div>
+                <div>
+                    <canvas id="tempChart"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <h2>Humidity levels</h2>
+                <div id="reportrangeHumidity" class="pull-left" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                    <span></span> <b class="caret"></b>
+                </div>
+                <div>
+                    <canvas id="humidityChart"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <h2>Temperature</h2>
+                <div id="reportrangeTemperature" class="pull-left" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                    <span></span> <b class="caret"></b>
+                </div>
+                <div>
+                    <canvas id="temperatureChart"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 <script src='static/index.js'></script>
-<script>
-    initChart();
-</script>
-
 </html>

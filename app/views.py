@@ -50,8 +50,8 @@ def get_data():
         print(timestamps)
     return jsonify(timestamps=timestamps, temperatures=temperatures, humidities=humidities)
 
-@app.route('/_get_dataMinMax')
-def get_dataMinMax():
+@app.route('/_get_humidityMinMax')
+def get_humidityMinMax():
     if request.args.get('startDate') and request.args.get('endDate'):
         startDate = request.args["startDate"]
         endDate = request.args["endDate"]
@@ -61,9 +61,25 @@ def get_dataMinMax():
         cur.execute("SELECT Date(timestamp) as Day , MAX(humidity) AS MaxHum, MIN(humidity) AS MinHum from temphum WHERE timestamp BETWEEN ? AND ? GROUP BY Day ORDER BY timestamp", (fromDate.isoformat(), toDate.isoformat()))
         rows = cur.fetchall()
         rows.reverse()
-        temperatures = [round(x[1],2) for x in rows]
-        humidities = [round(x[2],2) for x in rows]
+        maxHums = [round(x[1], 2) for x in rows]
+        minHums = [round(x[2], 2) for x in rows]
         timestamps = [x[0] for x in rows] #strftime("%Y-%b-%dT%H:%M")
         print(timestamps)
-        #GPIO.output(18, GPIO.LOW)
-    return jsonify(timestamps=timestamps, temperatures=temperatures, humidities=humidities)
+    return jsonify(timestamps=timestamps, maxHums=maxHums, minHums=minHums)
+
+@app.route('/_get_temperaturesMinMax')
+def get_temperaturesMinMax():
+    if request.args.get('startDate') and request.args.get('endDate'):
+        startDate = request.args["startDate"]
+        endDate = request.args["endDate"]
+        fromDate = parse(startDate)
+        toDate = parse(endDate)
+        cur = get_db().cursor()
+        cur.execute("SELECT Date(timestamp) as Day , MAX(temp) AS MaxHum, MIN(temp) AS MinHum from temphum WHERE timestamp BETWEEN ? AND ? GROUP BY Day ORDER BY timestamp", (fromDate.isoformat(), toDate.isoformat()))
+        rows = cur.fetchall()
+        rows.reverse()
+        maxTemps = [round(x[1], 2) for x in rows]
+        minTemps = [round(x[2], 2) for x in rows]
+        timestamps = [x[0] for x in rows] #strftime("%Y-%b-%dT%H:%M")
+        print(timestamps)
+    return jsonify(timestamps=timestamps, maxTemps=maxTemps, minTemps=minTemps)
