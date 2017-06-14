@@ -98,7 +98,7 @@ $(document).ready(function(){
             labels: result.timestamps,
             datasets: [
                 {
-                    label: 'Max Humidity',
+                    label: 'Min Humidity',
                     fill: true,
                     lineTension: 0.1,
                     backgroundColor: "rgba(75,192,192,0.4)",
@@ -116,11 +116,11 @@ $(document).ready(function(){
                     pointHoverBorderWidth: 2,
                     pointRadius: 4,
                     pointHitRadius: 10,
-                    data: result.maxHums,
+                    data: result.minHums,
                     spanGaps: false
                 },
                 {
-                    label: 'Min Humidity',
+                    label: 'Max Humidity',
                     fill: true,
                     lineTension: 0.1,
                     backgroundColor: "rgba(255,0,255,0.1)",
@@ -138,7 +138,7 @@ $(document).ready(function(){
                     pointHoverBorderWidth: 2,
                     pointRadius: 4,
                     pointHitRadius: 10,
-                    data: result.minHums,
+                    data: result.maxHums,
                     spanGaps: false
                 }],
         }
@@ -174,7 +174,7 @@ $(document).ready(function(){
             labels: result.timestamps,
             datasets: [
                 {
-                    label: 'Max Temperature',
+                    label: 'Min Temperature',
                     fill: true,
                     lineTension: 0.1,
                     backgroundColor: "rgba(75,192,192,0.4)",
@@ -192,11 +192,11 @@ $(document).ready(function(){
                     pointHoverBorderWidth: 2,
                     pointRadius: 4,
                     pointHitRadius: 10,
-                    data: result.maxTemps,
+                    data: result.minTemps,
                     spanGaps: false
                 },
                 {
-                    label: 'Min Temperature',
+                    label: 'Max Temperature',
                     fill: true,
                     lineTension: 0.1,
                     backgroundColor: "rgba(255,0,255,0.1)",
@@ -214,7 +214,7 @@ $(document).ready(function(){
                     pointHoverBorderWidth: 2,
                     pointRadius: 4,
                     pointHitRadius: 10,
-                    data: result.minTemps,
+                    data: result.maxTemps,
                     spanGaps: false
                 }],
         }
