@@ -84,6 +84,12 @@ $(document).ready(function(){
                             display: true,
                             labelString: 'Date'
                         }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
                     }]
                 }
             }
@@ -160,6 +166,12 @@ $(document).ready(function(){
                             display: true,
                             labelString: 'Date'
                         }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
                     }]
                 }
             }
@@ -235,6 +247,11 @@ $(document).ready(function(){
                         scaleLabel: {
                             display: true,
                             labelString: 'Date'
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            suggestedMin: 0
                         }
                     }]
                 }
